@@ -6,7 +6,7 @@ const LazyLorem = lazy(() =>
 );
 
 export function LazyComponent() {
-  const data = usePromise<any[]>(() => {
+  const [data, state] = usePromise<any[]>(() => {
     return fetch(`https://www.reddit.com/r/react.json`)
       .then((response) => response.json())
       .then(({ data }) => {
@@ -16,6 +16,7 @@ export function LazyComponent() {
 
   return (
     <div>
+      {`Promise state: ${state}`}
       <LazyLorem />
       {data?.map((post) => {
         return (

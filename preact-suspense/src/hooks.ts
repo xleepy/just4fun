@@ -2,7 +2,11 @@ import { useState, useRef } from "preact/hooks";
 
 type PromiseState = "pending" | "fulfilled" | "rejected";
 
-export function usePromise<T>(promiseFn: () => Promise<T>) {
+// https://github.com/reactwg/react-18/discussions/82
+// no need for mounted/unmounted check in promise
+export function usePromise<T>(
+  promiseFn: () => Promise<T>
+): [T | undefined, PromiseState, Error | undefined] {
   const [promiseState, setPromiseState] = useState<PromiseState>("pending");
   const [data, setData] = useState<T>();
   const [err, setError] = useState<Error>();
@@ -27,5 +31,5 @@ export function usePromise<T>(promiseFn: () => Promise<T>) {
     throw promiseRef.current;
   }
 
-  return data;
+  return [data, promiseState, err];
 }
