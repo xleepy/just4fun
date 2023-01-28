@@ -1,53 +1,30 @@
-import { useRef, useState } from "preact/hooks";
 import { lazy } from "preact/compat";
-
-type PromiseState = "pending" | "fulfilled" | "rejected";
+import { usePromise } from "./hooks";
 
 const LazyLorem = lazy(() =>
   import("./lorem").then(({ Lorem }) => ({ default: Lorem }))
 );
 
-function usePromise<T>(promiseFn: () => Promise<T>) {
-  const [promiseState, setPromiseState] = useState<PromiseState>("pending");
-  const [data, setData] = useState<T>();
-  const [err, setError] = useState<Error>();
-  const promiseRef = useRef<Promise<void>>();
-  if (!promiseRef.current) {
-    promiseRef.current = promiseFn()
-      .then((data) => {
-        setPromiseState("fulfilled");
-        setData(data);
-      })
-      .catch((err) => {
-        setPromiseState("rejected");
-        setError(err);
-      });
-  }
-
-  if (err) {
-    throw err;
-  }
-
-  if (promiseState === "pending") {
-    throw promiseRef.current;
-  }
-
-  return data;
-}
-
 export function LazyComponent() {
-  const data = usePromise(() => {
-    return new Promise<string>((resolve) => {
-      setTimeout(() => {
-        resolve("Hi from lazy");
-      }, 1000);
-    });
+  const data = usePromise<any[]>(() => {
+    return fetch(`https://www.reddit.com/r/react.json`)
+      .then((response) => response.json())
+      .then(({ data }) => {
+        return data.children.map((d: any) => d.data);
+      });
   });
 
   return (
     <div>
-      {data}
       <LazyLorem />
+      {data?.map((post) => {
+        return (
+          <div key={post.id}>
+            <h2>{post.title}</h2>
+            <p>{post.author}</p>
+          </div>
+        );
+      })}
     </div>
   );
 }
