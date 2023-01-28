@@ -14,6 +14,10 @@ export function LazyComponent() {
       });
   });
 
+  console.log("promise state", state);
+
+  console.log(this);
+
   return (
     <div>
       {`Promise state: ${state}`}
