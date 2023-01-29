@@ -13,3 +13,5 @@
 ### TODO
 
 - add refetch mechanism
+- Fix multiple hooks call
+- Fix state access on unmounted
