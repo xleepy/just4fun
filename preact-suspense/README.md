@@ -11,4 +11,5 @@
 
 ### TODO
 
+- fix duplicate network calls
 - add refetch mechanism

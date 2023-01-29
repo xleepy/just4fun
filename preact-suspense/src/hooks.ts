@@ -8,10 +8,13 @@ type HookState<T> = {
   err?: Error;
 };
 
+const keys = new Set<string>();
+
 // https://github.com/reactwg/react-18/discussions/82
 // no need for mounted/unmounted check in promise
 export function usePromise<T>(
-  promiseFn: () => Promise<T>
+  promiseFn: () => Promise<T>,
+  key: string
 ): [T | undefined, PromiseState, Error | undefined] {
   const [{ promiseState, data, err }, setHookState] = useState<HookState<T>>(
     () => {
@@ -21,7 +24,12 @@ export function usePromise<T>(
     }
   );
   const promiseRef = useRef<Promise<void>>();
+  const keyRef = useRef(key);
+
+  // const isNew = !keys.has(keyRef.current);
+
   if (!promiseRef.current) {
+    keys.add(keyRef.current);
     promiseRef.current = promiseFn()
       .then((data) => {
         setHookState({
