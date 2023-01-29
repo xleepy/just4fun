@@ -8,7 +8,7 @@ export function LazyComponent() {
       .then(({ data }) => {
         return data.children.map((d: any) => d.data);
       });
-  }, "test");
+  }, "unique-key");
 
   console.log("promise state", state);
 

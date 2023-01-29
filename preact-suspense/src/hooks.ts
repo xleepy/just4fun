@@ -8,7 +8,7 @@ type HookState<T> = {
   err?: Error;
 };
 
-const keys = new Set<string>();
+const fetchCache = new Map<string, Promise<any>>();
 
 // https://github.com/reactwg/react-18/discussions/82
 // no need for mounted/unmounted check in promise
@@ -24,12 +24,10 @@ export function usePromise<T>(
     }
   );
   const promiseRef = useRef<Promise<void>>();
-  const keyRef = useRef(key);
 
-  // const isNew = !keys.has(keyRef.current);
+  const isCached = fetchCache.has(key);
 
-  if (!promiseRef.current) {
-    keys.add(keyRef.current);
+  if (!promiseRef.current && !isCached) {
     promiseRef.current = promiseFn()
       .then((data) => {
         setHookState({
@@ -42,14 +40,20 @@ export function usePromise<T>(
           promiseState: "rejected",
           err,
         });
+      })
+      .finally(() => {
+        fetchCache.delete(key);
       });
+
+    fetchCache.set(key, promiseRef.current);
   }
 
   if (err) {
     throw err;
   }
 
-  if (promiseState === "pending") {
+  if (!data && isCached) {
+    // https://github.com/preactjs/preact/blob/master/compat/src/suspense.js#L6
     throw promiseRef.current;
   }
 
