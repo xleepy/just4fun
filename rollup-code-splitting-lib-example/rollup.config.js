@@ -6,6 +6,7 @@ const plugins = [resolve(), commonjs()];
 module.exports = [
   defineConfig({
     input: {
+      index: "./src/index.js",
       "module/a": "./src/a/index.js",
       "module/b": "./src/b/index.js",
     },
