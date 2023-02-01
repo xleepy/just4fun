@@ -1,0 +1,23 @@
+{
+  "name": "rollup-code-splitting-lib-example",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "files": [
+    "dist/*"
+  ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./a": "./dist/module/a.js",
+    "./b": "./dist/module/b.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "rollup": "^3.12.1"
+  }
+}

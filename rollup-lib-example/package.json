@@ -1,0 +1,16 @@
+{
+  "name": "rollup-lib-example",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^4.0.0"
+  },
+  "dependencies": {
+    "rollup-code-splitting-lib-example": "file:../rollup-code-splitting-lib-example"
+  }
+}
