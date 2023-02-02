@@ -1,4 +1,3 @@
-import { lazy } from "preact/compat";
 import { usePromise } from "./hooks";
 
 export function LazyComponent() {
@@ -15,13 +14,22 @@ export function LazyComponent() {
   );
 
   // render error
-  // const [test] = usePromise(() => Promise.resolve("test"), "another-key");
+  const [test] = usePromise(
+    () =>
+      new Promise((resolve) => {
+        setTimeout(() => {
+          resolve("test");
+        }, 1000);
+      }),
+    "another-key",
+    { suspense: true }
+  );
 
   console.log("promise state", state);
 
   return (
     <div>
-      {/* <p>{`test value ${test}`}</p> */}
+      <p>{`test value ${test}`}</p>
       <p>{`Promise state: ${state}`}</p>
       <ul>
         {data?.map((post) => {

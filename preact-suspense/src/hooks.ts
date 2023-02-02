@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "preact/hooks";
+import { useState, useRef, useEffect, useCallback } from "preact/hooks";
 
 type PromiseState = "pending" | "fulfilled" | "rejected";
 
@@ -28,43 +28,31 @@ export function usePromise<T>(
       };
     }
   );
-  const promiseRef = useRef<Promise<void>>();
 
-  const isCached = fetchCache.has(key);
+  const isSuspense = options?.suspense;
 
-  console.log(key, isCached);
+  const runPromise = useCallback(async () => {
+    const current = fetchCache.get(key) ?? promiseFn();
+    console.log("current", current);
+    try {
+      fetchCache.set(key, current);
+      const data = await current;
+      console.log(data);
+      setHookState({ data, promiseState: "fulfilled" });
+    } catch (err: any) {
+      setHookState({ err, promiseState: "rejected" });
+    }
+  }, [key, promiseFn]);
 
-  if (!promiseRef.current && !isCached) {
-    promiseRef.current = promiseFn()
-      .then((data) => {
-        // calls state on unmounted
-        setHookState({
-          promiseState: "fulfilled",
-          data,
-        });
-      })
-      .catch((err) => {
-        setHookState({
-          promiseState: "rejected",
-          err,
-        });
-      })
-      .finally(() => {
-        fetchCache.delete(key);
-      });
+  useEffect(() => {
+    if (!isSuspense) {
+      runPromise();
+    }
+  }, [isSuspense]);
 
-    fetchCache.set(key, promiseRef.current);
-  }
-
-  if (err) {
-    throw err;
-  }
-
-  const cached = fetchCache.get(key);
-
-  if (options?.suspense && !data && isCached) {
+  if (isSuspense && !data) {
     // https://github.com/preactjs/preact/blob/master/compat/src/suspense.js#L6
-    throw err ? err : promiseRef.current;
+    throw err ? err : runPromise();
   }
 
   return [data, promiseState, err];
