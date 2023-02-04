@@ -7,6 +7,7 @@ module.exports = {
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "preact",
+    "plugin:react-hooks/recommended",
   ],
   overrides: [],
   parser: "@typescript-eslint/parser",

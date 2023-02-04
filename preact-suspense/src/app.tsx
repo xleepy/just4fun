@@ -1,5 +1,5 @@
 import "./app.css";
-import { Suspense, useCallback, useState, JSX } from "preact/compat";
+import { Suspense, useCallback, useState } from "preact/compat";
 import { LazyComponent } from "./lazy-component";
 import { usePromise } from "./hooks/usePromise";
 

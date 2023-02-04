@@ -77,6 +77,7 @@ describe("usePromise tests", () => {
       return render(<App />);
     };
 
+    // TODO: suspense weirdly works in test scenarios. find potential fix for that
     it.skip("should render component and call promise with initial key", async () => {
       const { findByTestId } = setupApp();
 

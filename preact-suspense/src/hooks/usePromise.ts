@@ -53,6 +53,9 @@ export function usePromise<T>(
         fetchCache.delete(key);
       }
     };
+    // Don't want to rerun hook on each key change
+    // Should be removed only on unmount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -87,7 +90,7 @@ export function usePromise<T>(
     if (!isSuspense && isChanged) {
       runPromise();
     }
-  }, [isSuspense, shouldRefetch, isMounted]);
+  }, [isSuspense, shouldRefetch, isMounted, runPromise]);
 
   // in suspense mode promise should be thrown or error in case error received
   if (isSuspense && (shouldRefetch || !data)) {
