@@ -1,15 +1,22 @@
 import { usePromise } from "./hooks";
 
-export function LazyComponent() {
+type Props = {
+  query: string;
+};
+
+export function LazyComponent({ query }: Props) {
   const [data, state] = usePromise<any[]>(
     () => {
-      return fetch(`https://www.reddit.com/r/react.json`)
+      return fetch(`https://www.reddit.com/r/${query}.json`)
         .then((response) => response.json())
         .then(({ data }) => {
+          if (!data) {
+            return [];
+          }
           return data.children.map((d: any) => d.data);
         });
     },
-    "unique-key",
+    query,
     { suspense: true }
   );
 

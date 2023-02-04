@@ -8,6 +8,15 @@ type HookState<T> = {
   err?: Error;
 };
 
+// usePrevious reference: https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Client-side_JavaScript_frameworks/React_accessibility#more_robust_focus_management
+export function usePrevious<T>(value: T) {
+  const ref = useRef(value);
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
+
 const fetchCache = new Map<string, Promise<any>>();
 
 type Options = {
@@ -29,7 +38,29 @@ export function usePromise<T>(
     }
   );
 
+  const prevKey = usePrevious(key);
+
   const isSuspense = options?.suspense;
+
+  const shouldRefetch = prevKey !== key;
+
+  useEffect(() => {
+    return () => {
+      console.log("called unmount with", key);
+      if (fetchCache.has(key)) {
+        fetchCache.delete(key);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      console.log("removed prevkey", prevKey);
+      if (fetchCache.has(prevKey) && shouldRefetch) {
+        fetchCache.delete(prevKey);
+      }
+    };
+  }, [shouldRefetch, prevKey]);
 
   const runPromise = useCallback(async () => {
     const current = fetchCache.get(key) ?? promiseFn();
@@ -44,13 +75,15 @@ export function usePromise<T>(
     }
   }, [key, promiseFn]);
 
+  console.log("should refetch", shouldRefetch);
+
   useEffect(() => {
-    if (!isSuspense) {
+    if (!isSuspense || shouldRefetch) {
       runPromise();
     }
-  }, [isSuspense]);
+  }, [isSuspense, shouldRefetch]);
 
-  if (isSuspense && !data) {
+  if (isSuspense && (shouldRefetch || !data)) {
     // https://github.com/preactjs/preact/blob/master/compat/src/suspense.js#L6
     throw err ? err : runPromise();
   }

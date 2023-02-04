@@ -1,13 +1,16 @@
 import "./app.css";
-import { Suspense, useState } from "preact/compat";
+import { Suspense, useCallback, useState, JSX } from "preact/compat";
 import { LazyComponent } from "./lazy-component";
 import { usePromise } from "./hooks";
 
 export function App() {
-  const [count, setCount] = useState(0);
-  const handleClick = () => {
-    setCount((prevCount) => prevCount + 1);
-  };
+  const [query, setQuery] = useState("reactjs");
+  const handleInputChange = useCallback((event: Event) => {
+    const inputElem = event.target as HTMLInputElement;
+    setQuery(inputElem.value);
+  }, []);
+
+  const [displayList, setDisplayListState] = useState(true);
 
   // fix requests issue on multiple hook calls
 
@@ -17,12 +20,13 @@ export function App() {
   );
   return (
     <div>
-      <button className="counter" onClick={handleClick}>
-        {`Current count: ${count}`}
+      <input value={query} onChange={handleInputChange} />
+      <button onClick={() => setDisplayListState((prevState) => !prevState)}>
+        Toggle list
       </button>
       <p>{mockData}</p>
       <Suspense fallback={<p>loading...</p>}>
-        <LazyComponent />
+        {displayList && <LazyComponent query={query} />}
       </Suspense>
     </div>
   );
