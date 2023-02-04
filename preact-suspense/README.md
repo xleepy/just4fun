@@ -9,3 +9,7 @@
 
 - npm install
 - npm run dev
+
+### TODOS
+
+- Error handling

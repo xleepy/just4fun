@@ -14,7 +14,8 @@ export function LazyComponent({ query }: Props) {
             return [];
           }
           return data.children.map((d: any) => d.data);
-        });
+        })
+        .catch((err) => console.error(err));
     },
     query,
     { suspense: true }
