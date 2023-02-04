@@ -1,7 +1,7 @@
 import "./app.css";
 import { Suspense, useCallback, useState, JSX } from "preact/compat";
 import { LazyComponent } from "./lazy-component";
-import { usePromise } from "./hooks";
+import { usePromise } from "./usePromise";
 
 export function App() {
   const [query, setQuery] = useState("reactjs");

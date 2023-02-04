@@ -1,4 +1,4 @@
-import { usePromise } from "./hooks";
+import { usePromise } from "./usePromise";
 
 type Props = {
   query: string;
@@ -20,7 +20,6 @@ export function LazyComponent({ query }: Props) {
     { suspense: true }
   );
 
-  // render error
   const [test] = usePromise(
     () =>
       new Promise((resolve) => {

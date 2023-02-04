@@ -1,4 +1,4 @@
-## Understanding Suspense and how swr/recoil works
+## Understand Suspense and how swr/recoil/useQuery works
 
 - [Suspense](https://beta.reactjs.org/reference/react/Suspense)
 - [SWR](https://swr.vercel.app/)
@@ -9,7 +9,3 @@
 
 - npm install
 - npm run dev
-
-### TODO
-
-- add refetch mechanism

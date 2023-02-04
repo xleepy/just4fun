@@ -9,8 +9,8 @@ type HookState<T> = {
 };
 
 // usePrevious reference: https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Client-side_JavaScript_frameworks/React_accessibility#more_robust_focus_management
-export function usePrevious<T>(value: T) {
-  const ref = useRef(value);
+export function usePrevious<T>(value?: T): T | undefined {
+  const ref = useRef<T | undefined>(value);
   useEffect(() => {
     ref.current = value;
   });
@@ -20,7 +20,7 @@ export function usePrevious<T>(value: T) {
 const fetchCache = new Map<string, Promise<any>>();
 
 type Options = {
-  suspense: boolean;
+  suspense?: boolean;
 };
 
 // https://github.com/reactwg/react-18/discussions/82
@@ -38,15 +38,16 @@ export function usePromise<T>(
     }
   );
 
+  // mounted needed for request not in suspense mode
+  const [isMounted, setMounted] = useState(false);
   const prevKey = usePrevious(key);
-
-  const isSuspense = options?.suspense;
-
+  const isSuspense = options?.suspense ?? false;
   const shouldRefetch = prevKey !== key;
 
   useEffect(() => {
+    setMounted(true);
     return () => {
-      console.log("called unmount with", key);
+      // delete key on unmount
       if (fetchCache.has(key)) {
         fetchCache.delete(key);
       }
@@ -56,13 +57,15 @@ export function usePromise<T>(
   useEffect(() => {
     return () => {
       console.log("removed prevkey", prevKey);
-      if (fetchCache.has(prevKey) && shouldRefetch) {
+      // delete previous promise reference
+      if (prevKey && fetchCache.has(prevKey) && shouldRefetch) {
         fetchCache.delete(prevKey);
       }
     };
   }, [shouldRefetch, prevKey]);
 
   const runPromise = useCallback(async () => {
+    // get cached promise or run another request
     const current = fetchCache.get(key) ?? promiseFn();
     console.log("current", current);
     try {
@@ -75,14 +78,17 @@ export function usePromise<T>(
     }
   }, [key, promiseFn]);
 
-  console.log("should refetch", shouldRefetch);
+  console.log("should refetch for:", key, shouldRefetch);
 
   useEffect(() => {
-    if (!isSuspense || shouldRefetch) {
+    // not in suspense mode we should call promise in useEffect to prevent rendering issues
+    const isChanged = shouldRefetch || isMounted;
+    if (!isSuspense && isChanged) {
       runPromise();
     }
-  }, [isSuspense, shouldRefetch]);
+  }, [isSuspense, shouldRefetch, isMounted]);
 
+  // in suspense mode promise should be thrown or error in case error received
   if (isSuspense && (shouldRefetch || !data)) {
     // https://github.com/preactjs/preact/blob/master/compat/src/suspense.js#L6
     throw err ? err : runPromise();
