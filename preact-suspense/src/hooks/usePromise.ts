@@ -75,7 +75,9 @@ export function usePromise<T>(
     try {
       fetchCache.set(key, current);
       const data = await current;
-      console.log(data);
+      if (data === undefined) {
+        throw new Error("Data not found");
+      }
       setHookState({ data, promiseState: "fulfilled" });
     } catch (err: any) {
       setHookState({ err, promiseState: "rejected" });
@@ -94,10 +96,14 @@ export function usePromise<T>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuspense, shouldRefetch, isMounted]);
 
+  if (err) {
+    throw err;
+  }
+
   // in suspense mode promise should be thrown or error in case error received
   if (isSuspense && (shouldRefetch || !data)) {
     // https://github.com/preactjs/preact/blob/master/compat/src/suspense.js#L6
-    throw err ? err : runPromise();
+    throw runPromise();
   }
 
   return [data, promiseState, err];
