@@ -9,6 +9,7 @@ type HookState<T> = {
 };
 
 // usePrevious reference: https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Client-side_JavaScript_frameworks/React_accessibility#more_robust_focus_management
+// we need to provide initial value here otherwise component will be invalidated in each rerender try in suspense mode
 export function usePrevious<T>(value?: T): T | undefined {
   const ref = useRef<T | undefined>(value);
   useEffect(() => {

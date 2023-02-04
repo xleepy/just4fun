@@ -1,7 +1,7 @@
 import "./app.css";
 import { Suspense, useCallback, useState, JSX } from "preact/compat";
 import { LazyComponent } from "./lazy-component";
-import { usePromise } from "./usePromise";
+import { usePromise } from "./hooks/usePromise";
 
 export function App() {
   const [query, setQuery] = useState("reactjs");
@@ -20,10 +20,12 @@ export function App() {
   );
   return (
     <div>
-      <input value={query} onChange={handleInputChange} />
-      <button onClick={() => setDisplayListState((prevState) => !prevState)}>
-        Toggle list
-      </button>
+      <div className="input-container">
+        <input value={query} onChange={handleInputChange} />
+        <button onClick={() => setDisplayListState((prevState) => !prevState)}>
+          Toggle list
+        </button>
+      </div>
       <p>{mockData}</p>
       <Suspense fallback={<p>loading...</p>}>
         {displayList && <LazyComponent query={query} />}

@@ -9,3 +9,15 @@
 .counter {
   margin-bottom: 1rem;
 }
+
+.input-container {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  max-width: 200px;
+}
+
+
+.input-container button {
+  margin-top: 1rem;
+}

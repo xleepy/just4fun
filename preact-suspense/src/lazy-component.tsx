@@ -1,4 +1,4 @@
-import { usePromise } from "./usePromise";
+import { usePromise } from "./hooks/usePromise";
 
 type Props = {
   query: string;
