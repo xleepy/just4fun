@@ -90,7 +90,9 @@ export function usePromise<T>(
     if (!isSuspense && isChanged) {
       runPromise();
     }
-  }, [isSuspense, shouldRefetch, isMounted, runPromise]);
+    // runPromise will cause infinitive hook call
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuspense, shouldRefetch, isMounted]);
 
   // in suspense mode promise should be thrown or error in case error received
   if (isSuspense && (shouldRefetch || !data)) {
